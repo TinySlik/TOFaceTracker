@@ -241,15 +241,15 @@ void TOFaceDetector::detect(void)
     ProcessFaceDetect(current,faceFindAray);
 
 #if 0 //debug res:faceFindAray
-if(faceFindAray.size() > 0)
-{
-for (int i = 0; i < faceFindAray.size(); ++i)
-{
-cout << "find face" << i << " :  ";
-cout << faceFindAray[i];
-}
-cout << endl;
-}
+    if(faceFindAray.size() > 0)
+    {
+        for (int i = 0; i < faceFindAray.size(); ++i)
+    {
+        cout << "find face" << i << " :  ";
+        cout << faceFindAray[i];
+    }
+        cout << endl;
+    }
 #endif
     std::vector<STRATEGY_CHAIN_HOLDER_UNIT> tmpSTfaces;
     for (size_t i = 0; i < faceFindAray.size(); ++i)
@@ -368,112 +368,111 @@ void TOFaceDetector::analysisTAndD(const FRAME_STRATEGY_FACE_UNIT & src)
     std::vector<int> statusQueueAct;
     for (int i = 0; i < src.STfaces.size(); ++i)
     {
-int status = -1; // 0/waitToBeActive 1/nothingToDo
-for (int j = 0; j < tagTable.size(); ++j)
-{
-    switch(tagTable[j][i])
-    {
-        case 'e':
-        case 'd':
-        case 'c':
-        status = status < 1 ? 1 : status;
-        break;
-        case 'b':
-        case 'a':
-        status = status < 0 ? 0 : status;
-        break;
-        default:
-        break;
-    }
-}
-statusQueueAct.push_back(status);
-#if _DEBUG_STRATEGY_MATCH
-cout<< "queue " << i << "status: " << status << endl;
-#endif
-}
-
-std::vector<int> statusQueue;
-bool isAllClean = false;
-for (int i = 0; i < tagTable.size(); ++i)
-{
-    std::vector<char> line = tagTable[i];
-int status = -1; // 0/dormant 1/waittostop (waring) 2/waittofix 3/nice -1/no face found
-
-for (int j = 0; j < line.size(); ++j)
-{
-    switch(line[j])
-    {
-        case 'e':
-        status = status < 3 ? 3 : status;
-        break;
-        case 'd':
-        status = status < 2 ? 2 : status;
-        break;
-        case 'c':
-        case 'b':
-        status = status < 1 ? 1 : status;
-        break;
-        case 'a':
-        status = status < 0 ? 0 : status;
-        break;
-        default:
-        break;
-    }
-}
-#if _DEBUG_STRATEGY_MATCH
-cout<< "line " << i << "status: " << status << endl;
-#endif
-statusQueue.push_back(status);
-if (status == 1)
-{
-    m_trackerTwistedPool->tryToDormantObject(i);
-}else if(status == 2)
-{
-    m_trackerTwistedPool->tryToFixObject(src.STfaces[bigSQueue[i]].rect,i);
-}else if(status == 3)
-{
-    m_trackerTwistedPool->keepObjectWell(i);
-}else if(status == 0)
-{
-//
-}else if(status == -1)
-{
-    isAllClean = true;
-}
-}
-
-
-if(isAllClean)
-{
-#if _DEBUG_STRATEGY_MATCH
-    cout << "clean all tracker" << endl;
-#endif
-    for (int i = 0; i < src.sameTimeTrackerReses.size(); ++i)
-    {
-        if(src.sameTimeTrackerReses[i] == Rect0)
+        int status = -1; // 0/waitToBeActive 1/nothingToDo
+        for (int j = 0; j < tagTable.size(); ++j)
         {
-//
-        }else
+            switch(tagTable[j][i])
+            {
+                case 'e':
+                case 'd':
+                case 'c':
+                status = status < 1 ? 1 : status;
+                break;
+                case 'b':
+                case 'a':
+                status = status < 0 ? 0 : status;
+                break;
+                default:
+                break;
+            }
+        }
+        statusQueueAct.push_back(status);
+        #if _DEBUG_STRATEGY_MATCH
+        cout<< "queue " << i << "status: " << status << endl;
+        #endif
+    }
+
+    std::vector<int> statusQueue;
+    bool isAllClean = false;
+    for (int i = 0; i < tagTable.size(); ++i)
+    {
+        std::vector<char> line = tagTable[i];
+        int status = -1; // 0/dormant 1/waittostop (waring) 2/waittofix 3/nice -1/no face found
+
+        for (int j = 0; j < line.size(); ++j)
+        {
+            switch(line[j])
+            {
+                case 'e':
+                status = status < 3 ? 3 : status;
+                break;
+                case 'd':
+                status = status < 2 ? 2 : status;
+                break;
+                case 'c':
+                case 'b':
+                status = status < 1 ? 1 : status;
+                break;
+                case 'a':
+                status = status < 0 ? 0 : status;
+                break;
+                default:
+                break;
+            }
+        }
+#if _DEBUG_STRATEGY_MATCH
+        cout<< "line " << i << "status: " << status << endl;
+#endif
+        statusQueue.push_back(status);
+        if (status == 1)
         {
             m_trackerTwistedPool->tryToDormantObject(i);
+        }else if(status == 2)
+        {
+            m_trackerTwistedPool->tryToFixObject(src.STfaces[bigSQueue[i]].rect,i);
+        }else if(status == 3)
+        {
+            m_trackerTwistedPool->keepObjectWell(i);
+        }else if(status == 0)
+        {
+        //
+        }else if(status == -1)
+        {
+            isAllClean = true;
         }
     }
-}
 
-for (int i = 0; i < statusQueueAct.size(); ++i)
-{
-    for (int j = 0; j < statusQueue.size(); ++j)
+
+    if(isAllClean)
     {
-        if(statusQueueAct[i] == 0 && statusQueue[j] == 0)
+    #if _DEBUG_STRATEGY_MATCH
+        cout << "clean all tracker" << endl;
+    #endif
+        for (int i = 0; i < src.sameTimeTrackerReses.size(); ++i)
         {
-statusQueueAct[i] = 1;//wait to active
-statusQueue[j] = 4;
-m_trackerTwistedPool->tryToActiveObject(src.STfaces[i].rect,j);
-}
-}
-}
+            if(src.sameTimeTrackerReses[i] == Rect0)
+            {
+    //
+            }else
+            {
+                m_trackerTwistedPool->tryToDormantObject(i);
+            }
+        }
+    }
 
-m_trackerTwistedPool->noticeLoopEnd();
+    for (int i = 0; i < statusQueueAct.size(); ++i)
+    {
+        for (int j = 0; j < statusQueue.size(); ++j)
+        {
+            if(statusQueueAct[i] == 0 && statusQueue[j] == 0)
+            {
+                statusQueueAct[i] = 1;//wait to active
+                statusQueue[j] = 4;
+                m_trackerTwistedPool->tryToActiveObject(src.STfaces[i].rect,j);
+            }
+        }
+    }
+    m_trackerTwistedPool->noticeLoopEnd();
 }
 
 size_t TOFaceDetector::getMinistIntervalIndex(std::vector<FRAME_STRATEGY_FACE_UNIT>& array)
@@ -590,7 +589,6 @@ std::vector<FRAME_STRATEGY_FILTRATION_UNIT> TOFaceDetector::get2NodeTails(const 
                         res.push_back(out);
                         break;
                     }
-
                 }while(true);
             }
         }

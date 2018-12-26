@@ -119,7 +119,7 @@ namespace TO {
         bool m_kcfMULTISCALE;
         bool m_kcfSILENT;
         bool m_kcfLAB;
-
+        bool m_preLogTag;
 
         bool m_OneDetectLoopTag;
 

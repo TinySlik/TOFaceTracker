@@ -228,7 +228,7 @@ void* TOThreadBase::threadMain(void* args)
                     if(m_objs[i].obj == pThread)
                     {
                         m_objs[i].isThreadExist = false;
-                        cout << "["  << pThread->m_threadID << "]-[" << pThread->m_calssName <<  "]" << "release ready" << endl;
+                        cout << "["  << pThread->m_threadID << "]-[" << pThread->m_calssName <<  "]" << pThread << "release ready" << endl;
                         waitBreakTag = true;
                     }
                 }
